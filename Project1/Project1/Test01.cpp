@@ -1,4 +1,13 @@
+
+//包含来自标准库的头文件时，也应该用<> 包围头文件名。对于不属于标准库的头文件，则用“”包围。
+
+//网上解释如下：
+//include<XX.h>表示在标准库里面找(不用加绝对路径)
+//include"..\XX.h"表示在指定文件中找(需要加路径(绝对或相对都行)
 #include<iostream>
+
+//命名空间可以帮助我们避免不经意的名字定义冲突，以及使用库中相同名字导致的冲突。
+//标准库定义的所有名字都再命名空间std中。
 using namespace std;
 
 
@@ -12,8 +21,12 @@ void MyIostreamTest()
 	std::cout << std::endl;
 
 	int a = 0, b = 0;
+	//cin是istream类型对象。这个对象也被称为 标准输入。
 	std::cin >> a >> b;
 
+	//cout 是ostream类型的对象，此对象也被称为  标准输出
+	//endl， 这是一个被称为 操纵符  的特殊字值。  写入endl的效果是结束当前行，并将与设备关联的缓冲区（buffer）中的内容刷到设备中。
+	//缓冲刷新操作可以保证到目前为止程序所产生的所有输出都真正写入输出流中，而不是仅停留再内存中等待写入流。
 	std::cout << a << "+" << b << "is " << a + b << std::endl;
 
 	system("pause");
@@ -115,11 +128,12 @@ void MyTest()
 	std::cout << MyTestsum << std::endl;
 
 }
-*/
+
 void MyIf()
 {
 	int currVal = 0, val = 0;
 
+	//if 只是判断第一个数为有效值
 	if (std::cin >>currVal)
 	{
 		int cnt = 1;
@@ -138,7 +152,7 @@ void MyIf()
 		}
 
 		int b = 4;
-		std::cout << currVal << "  occurs  " << cnt << "  times  " << std::endl;
+		std::cout << currVal << "  occurs  " << cnt << "  times  " << std::endl; //因为上面的语句，走不了else的情况。
 	}
 	// 测试数组： 42 42 42 42 42 55 55 62 100 100 100
 }
@@ -176,3 +190,4 @@ int main()
 	return 0;
 
 }
+*/

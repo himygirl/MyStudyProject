@@ -18,9 +18,21 @@
     <ClInclude Include="Test01.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="MyClass1_5.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DateType2_.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Test01.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MyClass1_5.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DateType2_.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

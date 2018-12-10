@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -115,9 +115,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DateType2_.h" />
+    <ClInclude Include="MyClass1_5.h" />
     <ClInclude Include="Test01.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DateType2_.cpp" />
+    <ClCompile Include="MyClass1_5.cpp" />
     <ClCompile Include="Test01.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
