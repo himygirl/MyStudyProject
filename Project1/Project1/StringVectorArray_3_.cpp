@@ -381,6 +381,189 @@ void Change10to15()
 	system("pause");
 }
 
+//标准库类型vector,     vector 是一个类模板。
+#include<vector>
+
+void Myvecto() {
+
+	//vector能容纳绝大多数类型的对象作为其元素，但是因为引用不是对象，所以不存在包含引用的vector。
+vector <int> iec;							 //ivec 保存int类型的对象；
+vector <vector<string>> file;		//该向量的元素是vector对象
+
+/*
+初始化vector对象的方法
+vector<T> v1                          v1是一个空vector，它潜在的元素是T类型的，执行默认初始化
+vector<T> v2(v1)						v2中包含又v1所有元素的副本
+vector<T> v2= v1					等价于v2（v1），v2中包含有v1所有元素的副本
+vector<T>v3(n,val)					v3包含了n个重复的元素，每个元素的值都是val
+vector<T>v4(n)						v4包含了n个重复地执行了值初始化的对象
+vector<T>v5{a,b,c,.....}				v5包含了初始值个数的元素，每个元素被赋予相应的初始化。
+vector<T>v5 ={a,b,c....}
+
+*/
+
+vector<int> ivec;                  //初始化状态为空
+//在此处给ivec3 添加一些值
+vector<int> ivec2(ivec);       //把ivec的元素拷贝给ivec2
+vector<int> ivec3 = ivec;     //把ivec的元素拷贝给ivec3
+//vector<string> svec(ivec2)  //错误：svec的元素是string对象，不是int
+
+vector<string> articles = { "a","an","the" };
+vector<string> v1_01{ "a","an","the" };//列表初始化
+
+//如果提供的是初始元素的列表，则只能把初始化都放在花括号里进行列表初始化，而不能放在圆括号里：
+//vector<string> v2("a", "an", "the"); //错误
+
+
+//创建指定数量的元素
+vector<int> ivec02(10, -1);				 //10个int类型的元素，每个都被初始化为-1
+vector<string> svec02(10, "hi!");	//10个string类型的元素，每个都被初始化为“hi！”
+
+vector<int> ivec03(10);					//10个元素，每个都初始化为0
+vector<string> svec04(10);				//10个元素，每个都是空string对象。
+
+//如果只提供了元素的数量而没有设定初始值，只能使用直接初始化：
+//vector<int> vi = 10;                   //错误：必须使用直接初始化的形式指定向量大小。
+
+//列表初始值还是元素数量？
+//某些情况下，初始化的真实含义依赖于传递初始值时用的是花括号还是圆括号。
+vector<int> v1(10);			//v1有101个元素，每个的值都是0
+vector<int>v2{ 10 };		//v2有1个元素，该元素的值是10
+
+vector<int> v3(10, 1);		//v3有10个元素，每个的值都是1
+vector<int> v4{ 10,1 };		//v4有2个元素，值分别是10和1
+
+vector<string> v5{ "hi" };   //列表初始化：v5有一个元素
+//vector<string> v6("hi");		//错误：不能使用字符串字面值构建vector对象
+
+//如果初始化时使用了花括号的形式，但是提供的值有不能用来列表初始化，就要考虑用这样的值来构造vector对象了。
+vector<string> v7{ 10 };			//v7  有10个默认初始化的元素
+vector<string>v8{ 10,"hi" };    //v8有10个值为”hi“ 的元素
+
+}
+
+//向vector对象中添加元素
+//推荐创建一个空的的vector，然后添加。除非所有元素的值都一样。
+void VectorAdd()
+{
+	vector<int> v2;			//空vector对象
+	for (int i = 0; i != 10; ++i)
+		v2.push_back(i);		//依次把整数值放在v2尾部   //push_back负责把一个值当成vector对象的尾元素”压到（push）“ vector对象的”尾端（back）“。
+
+
+	string word;
+	vector<string> text;         //空vector对象
+	while (cin >> word) {
+		text.push_back(word);
+	}
+
+}
+
+void VectorAdd02() {
+
+	int Test;
+	vector<int> Myint;
+	while (cin>>Test)
+	{
+		Myint.push_back(Test);
+
+	}
+
+	for (int i = 0; i < Myint.size(); ++i)   
+	{
+		std::cout << Myint[i] << std::endl;
+	}	
+
+	system("pause");
+}
+/*
+//vector 支持的操作
+
+v.empty()		              //如果v不含有任何元素，返回真：否则返回假
+v.size()						//返回v中元素的个数
+v.pushe_back(t)		//向v的尾端添加一个值为t的元素
+v[n]							//返回v中第n个位置上”元素的引用“
+v1=v2						//用v2中元素的拷贝替换v1中的元素
+v1={a,b,c.....}				//用列表中元素的拷贝替换v1中的元素
+v1 == v2					//v1和v2相等当且仅当它们的元素数量相同且对应位置的元素值都相同
+v1!=v2
+ 
+ <,<=,>,>=				顾名思义，以字典顺序进行比较。
+
+*/
+
+//分数分段
+//以10分为一个分数段统计成绩的数量：0~9,10~19,....,90~99,100
+void FractionSegmentation()
+{
+	vector<unsigned> scores(11, 0);  //11个分数段，全都初始化的0
+
+	unsigned grade;
+	while (cin>>grade)                       //读取成绩
+	{
+		if (grade<=100)						//只处理有效的成绩
+		{
+			++scores[grade / 10];			//将对应分数段的记数值加1
+		}
+	}
+
+	for (auto c : scores)
+	{
+		std::cout << c << std::endl;
+	}
+	system("pause");
+}
+
+//不能用下标形式添加元素
+//vector对象（以及string对象）的下标运算符可用于访问已存在的元素，而不能用于添加元素。
+void myvector03()
+{
+	vector<int> ivec; //空vector对象
+
+	for (decltype(ivec.size()) ix = 0; ix != 10; ++ix) {
+	
+	//			ivec[ix] = ix;//严重错误：ivec不包含任务元素
+		ivec.push_back(ix);  //正确：添加一个新元素，该元素的值时ix。
+	}
+	
+}
+
+void myvector04()
+{
+	string mystring = "abc";
+
+	for (auto c :mystring)
+	{
+		char myc = toupper(c);
+		std::cout << myc << std::endl;
+	}
+
+
+	vector<string> myvector= { "A","b" };
+
+	//如果容器为空，则begin和end返回的是同一个迭代器，都是尾后迭代器。
+	auto a = myvector.begin(), b = myvector.end();    //a和b的类型相同，都为 iterator（迭代器）
+	if (a==b)
+	{
+
+	}
+
+	system("pause");
+
+	/*
+	*iter 返回迭代器iter所指元素的引用
+	iter->mem			  解引用iter并获取该元素的名为mem的成员，等价于（*iter）.mem
+	++iter					  令iter指示容器中的下一个元素
+	--iter					  令iter指示容器中的上一个元素
+	iter1 ==iter2			判断两个迭代器是否相等（不相等），如果两个迭代器指示的是同一个原始或者
+	iter1 ！= iter2		 它们是同一个容器的尾后迭代器，则相等；反之，不相等。
+
+
+
+	*/
+
+}
+
 
 int main()
 {
@@ -398,6 +581,9 @@ int main()
 	//DelLineData("H:/云渲染接口.txt",1);
 	//ModityFile("H:/云渲染接口.txt",1,"hello world");
 	//Mystring02();
-	Change10to15();
+	//Change10to15();
+	//VectorAdd02();
+	//FractionSegmentation();
+	myvector04();
 	return 0;
 }
