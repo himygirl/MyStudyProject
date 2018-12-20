@@ -27,6 +27,9 @@
     <ClInclude Include="StringVectorArray_3_.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Expression_4.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Test01.cpp">
@@ -39,6 +42,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="StringVectorArray_3_.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression_4.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Sentence_5.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
