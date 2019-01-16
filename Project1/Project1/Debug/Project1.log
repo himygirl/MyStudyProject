@@ -1,2 +1,3 @@
 ﻿  MyClass_7.cpp
-  Project1.vcxproj -> D:\MyStudyProject_Kael\MyStudyProject\Project1\Debug\Project1.exe
+c:\users\chenzhi\documents\github\mystudyproject\project1\project1\myclass_7.cpp(462): warning C4244: “=”: 从“Exercise::Type”转换到“int”，可能丢失数据
+  Project1.vcxproj -> C:\Users\chenzhi\Documents\GitHub\MyStudyProject\Project1\Debug\Project1.exe
