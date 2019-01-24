@@ -718,7 +718,7 @@ private:
 这一限制及适用与this的显式使用，也对调用非静态成员的隐式使用有效。
 
 */
-class Account
+class Account_02
 {
 public:
 	void calculate() { amount += amount * interestRate; }
@@ -729,9 +729,104 @@ private:
 	std::string  owner;
 	double amount;
 	static double interestRate;
-	static double initRate();
+	//static double initRate(); //kael：不管有没有：double Account_02::interestRate = initRate(); 无法解析的外部符号 "private: static double Account_02::interestRate" 
+	static double initRate() { return interestRate; }  //kael：如果没有double Account_02::interestRate = initRate();， 则出现：无法解析的外部符号 "private: static double Account_02::interestRate"
 };
 
+//使用类的静态成员
+
+void test_08() {
+Account_02 ac1;
+Account_02*ac2 = &ac1;
+double r;
+r = Account_02::rate();    //使用作用域运算符访问静态成员
+
+r = ac1.rate();					//通过Account的对象或引用
+r = ac2->rate();				//通过指向Account对象的指针
+}
+
+//定义静态成员
+//当在类的外部定义静态成员时，不能重复static关键字，该关键字只出现在类的内部的声明语句：
+void Account_02::rate(double newrate)
+{
+	interestRate = newrate;
+}
+//Note:  和类的所有成员一样，当我们指向类外部的静态成员时，必须指明成员所属的类名。static关键字则只出现在类内部的声明语句中。
+
+/*
+因为静态数据成员不属于类的任何一个对象，所以它们并不是在创建类的对象时被定义的。这意味着它们不是由类的构造函数初始化的。而且一般来说，我们不能在类的内部
+初始化静态成员。相反的，必须在类的外部定义和初始化每个静态成员。和其他对象一样，一个静态数据成员只能定义一次。
+		类似于全局变量，静态数据成员定义在任何函数之外。因此一旦它被定义，就将一直存在于程序的整个生命周期中。
+*/
+
+//定义并初始化一个静态成员
+double Account_02::interestRate = initRate();
+/*
+上面这条语句定义了名为interestRate 的对象，该对象时类Account的静态成员，其类型时double。从类名开始，这条定义语句的剩余部分就都位于类的作用域之内了。
+因此，我们可以直接使用initRate函数。注意：虽然initRate时私有的，我们也能用它初始化interestRate。和其他成员的定义一样，interestRate的定义也可以访问类的私有成员。
+
+*/
+
+/*
+TIP：要想确保对象只定义一次，最好的方法是把静态成员的定义与其他非内联函数的定义放在同一个文件中。
+
+*/
+
+
+//静态成员的类内初始化
+/*
+Best Practices ：即使一个常量静态数据成员在类内部被初始化了，通常情况下也应该在类的外部定义一下该成员
+*/
+
+//静态成员能用于某些场景，而普通成员不能
+
+//静态数据成员的类型可以就是它所属的类类型。而非静态数据成员则受限制，只能声明成它所属的指针或引用：
+class Bar 
+{
+private:
+	static  Bar mem1;  //正确：静态成员可以是不完全类型
+	Bar*  mem2;				//正确：指针成员可以是不完全类型
+	//Bar mem3;				//错误：数据成员必须是完全类型
+	/*
+类的定义和声明也可以像函数一样分开。
+栗子：
+
+class CSys;
+
+上述声明被称为前向声明。对于CSys来说，其声明之后和定义之前，被称为不完全类型。
+	
+	*/
+};
+//静态成员和普通成员的另外一个区别是我们可以使用静态成员作为默认实参：
+class Screen_8
+{
+public:
+	//Bkground 表示一个在类中稍后定义的静态成员
+	Screen_8& clear(char = bkground);
+
+private:
+	static const char bkground;
+};
+
+//练习：7.56
+/*
+知识点1：类的静态成员：该成员只需与类的本身有关，而不是与类的对象有关，加上static关键字即可声明，其不与任何实例化对象绑定，但是我们仍然可以使用类作用域运算符访问静态成员。
+知识点2：static声明在内部。在外部定义时，不加static.类似与一个全局变量，其初始值必须是常量表达式。
+知识点3：静态成员独立于任何对象，其类型可以是它所属的类类型。而非静态成员只能声明为其类的指针或引用
+
+*/
+
+
+
+
+
+
+/*
+非静态数据成员不能作为默认实参，因为它的值本身属于对象的一部分，这么做的结果是无法真正提供一个对象以便从中获取成员的值，最终将引发错误。
+*/
+
+
+/*
 
 int main()
 {
@@ -739,3 +834,5 @@ int main()
 
 	system("pause");
 }
+
+*/

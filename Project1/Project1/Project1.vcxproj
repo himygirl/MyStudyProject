@@ -125,6 +125,7 @@
     <ClCompile Include="DateType2_.cpp" />
     <ClCompile Include="Expression_4.cpp" />
     <ClCompile Include="Function_6.cpp" />
+    <ClCompile Include="IO_8.cpp" />
     <ClCompile Include="MyClass1_5.cpp" />
     <ClCompile Include="MyClass_7.cpp" />
     <ClCompile Include="Sentence_5.cpp" />
