@@ -253,14 +253,175 @@ void test_07(int argc, char** argv)
 		cout << vec[i] << endl;
 	}
 
+}
+
+//8.2.2 文件模式
+/*
+每个流都有一个关联的文件模式，用来指出如何使用文件。
+															文件模式
+in						以读方式打开
+out					以写方式打开
+app					每次写操作前均定位到文件末尾
+ate					打开文件后立即定位到文件末尾
+trunc				截断文件
+binary				以二进制方式进行IO
 
 
+指定文件模式有如下限制：
+
+*只可以对ofstream 或 fstream 对象设定out模式
+*只可以对ifstream  或 fstream 对象设定in 模式
+*只有当out 也被设定时才可设定trunc模式
+*只要trunc没被设定，就可以设定app模式。在app模式下，即使没有显式指定out模式，文件也总是以输出方式被打开
+*默认情况下，即使我们没有指定trunc，以out模式打开的文件也被截断。为了保留以out模式打开的文件内容，我们必须同时指定app模式，
+这样只会将数据追加写到文件末尾；或者同时指定in模式，即打开文件同时进行读写操作
+*ate 和 binary 模式可用于任何类型的文件流对象，且可以与其他任何文件模式组合使用。
+
+每个文件流类型都定义了一个默认的文件模式，当我们未指定文件模式时，就使用此默认模式。与ifstream关联的文件默认以in模式打开；
+与ofstream关联的文件默认以out模式打开；与fstream关联的文件默认以in和out模式打开
+
+*/
+
+//以out模式打开文件会丢失已有数据
+//默认情况下，哦我们打开一个ofstream时，文件的内容会被丢弃。阻止一个ofstream清空给定文件内容的方法时同时指定app模式：
+
+void TestIO_08()
+{
+//在这几条与语句中，filel都被截断
+	ofstream out("filel"); //隐含以输出模式打开文件并截断文件
+	ofstream out2("filel", ofstream::out); //隐含地截断文件
+	ofstream out3("filel", ofstream::out | ofstream::trunc);	
+	
+	//为了保留文件内容，我们必须显式指定app模式
+	ofstream app("filel2", ofstream::app);	//隐含为输出模式
+	ofstream app2("fliel2", ofstream::out | ofstream::app);
+
+	//Warning   保留被ofstream打开的文件中已有数据的唯一方法是显式指定app或in模式
 }
 
 
+//每次调用open时都会确定文件模式
+//对于一个给定流，没当打开一个文件时，都可以改变其文件模式。
+void TestIO_09()
+{
+ofstream out;		//未指定文件打开模式
+out.open("screatchpad");   //模式隐含设置未输出和截断  
+/*
+文件隐式地以out模式打开。通常情况下out模式意味着同时使用trunc模式。因此，当前目录下名为scratchpad的文件的内容将被清空。
+当打开名为scratchpad的文件的内容将被清空。当打开名为precious的文件时，我们指定了append模式。文件中已有的数据都得以保留，
+所有写操作都在文件末尾进行。
+*/
+
+out.close();  //关闭out，以便我们将其用于其他文件
+out.open("precious", ofstream::app);	//	模式为输出和追加
+out.close();
+}
+
+
+//8.3 string流
+/*
+istringstream从string读取数据，ostringstream向string写入数据，而头文件stringstream即可从string读数据也可向string写书。
+
+													stringstream特有的操作
+sstream strm(s)；		strm是一个未绑定的stringstream对象。sstream是头文件sstream中定义的一个类型
+sstream strm(s);			strm是一个sstream对象，保存string s的一个拷贝。此构造函数是explicit的
+strm.str()						返回strm所保存的string的拷贝
+strm.str(s)					将string s拷贝到strm中。返回void
+
+*/
+
+//练习8.9
+istream&  func(istream& is)
+{
+	string buf;
+	while (is>>buf)
+	{
+		std::cout << buf << std::endl;
+	}
+	is.clear();
+	return is;
+}
+
+void TestIO_10()
+{
+	//两种文件流皆open和close函数，之后视情况打开读会或者写模式
+	string infile = "1.txt";   //代表文件名
+	vector<string> vec;    //声明一个vector
+	ifstream in(infile);		//ifstream定义了一个输入流in（文件流），它被初始化从文件中读取数据
+	istringstream iss("hello");
+	func(iss);
+	if (in) //检查文件的读写是否成功
+	{
+		string buf;
+			while(in>>buf)
+		{
+				vec.push_back(buf);
+		}
+	}
+	else
+	{
+		cerr << "cannot open this file:" << infile << endl;
+	}
+	for (int i =0;i<vec.size();++i)
+	{
+		cout << vec[i] << endl;
+	}
+
+}
+
+//练习8.10
+void TestIO_11()
+{
+	/*两种文件流皆有open和close函数，之后视情况打开读或者写模式*/
+	string infile = "1.txt";//代表文件名
+	vector<string> vec;//声明一个vector
+	ifstream in(infile);//ifstream定义了一个输入流in(文件流)，它被初始化从文件中读取数据 
+
+	if (in)//检查文件的读取是否成功,养成良好的习惯！
+	{
+		string buf;
+		while (getline(in, buf))//每个单词的独立输入，自动以空格为间隔
+		{
+			vec.push_back(buf);
+		}
+	}
+	else
+	{
+		cerr << "cannot open this file: " << infile << endl;
+	}
+	for (int i = 0; i < vec.size(); ++i)
+	{
+		istringstream iss(vec[i]);//将istringstream与vec[i]相绑定
+		string word;
+		while (iss >> word)
+			cout << word << endl;
+	}
+
+}
+
+//将参数定义为&引用：在使用时无需进行赋值，省去很多空间与时间。定义为const：在函数内部不允许对参数进行修改
+
+
+/*
+C++使用标准库类来处理面向流的输入和输出：
+*iostream 处理控制台IO
+*fstream 处理命名文件IO
+*stringstream完成内存string的IO
+
+类fstream和stringstream都是继承自类iostream的。输入类都继承自istream，输出类都继承自ostream。因此，可以在istream对象上执行的操作，
+也可在ifstream或istringstream对象上执行。继承自ostream的输出类也有类似情况。
+
+
+
+
+
+*/
+/*
 int main()
 {
 
 	system("pause");
 	return 0;
 }
+
+*/

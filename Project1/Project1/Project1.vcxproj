@@ -122,6 +122,7 @@
     <ClInclude Include="Test01.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="container_9.cpp" />
     <ClCompile Include="DateType2_.cpp" />
     <ClCompile Include="Expression_4.cpp" />
     <ClCompile Include="Function_6.cpp" />
