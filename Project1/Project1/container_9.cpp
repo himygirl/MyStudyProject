@@ -9,6 +9,7 @@
 #include <array>
 #include <stdint.h>
 #include <deque>
+#include <stack>
 using namespace std;
 
 
@@ -1153,10 +1154,641 @@ void Test32()
 
 
 }
+
+//练习9.38： 编写程序，探究再你的标准库实现中，vector是如何增长的。
+void Test33()
+{
+	vector<int> vec1;
+	int a;
+	while (cin >> a)
+	{
+		vec1.push_back(a);
+		cout << "vector的大小" << vec1.size() << endl;;
+		cout << "vector的容量" << vec1.capacity() << endl;
+	}
+
+}
+
+//习题 9.39：解释下面程序片段做了什么：
+void Test34()
+{
+	vector<string> svec;
+	svec.reserve(1024);
+	string world;
+	while (cin>>world)
+	{
+		svec.push_back(world);
+	}
+//	svec.resize(svec.size() + svec.size / 2); //kael  编译保持：error C3867: “std::vector<std::string,std::allocator<_Ty>>::size”: 非标准语法
+/*
+知识点：reverse(n)函数，分配能容纳n个元素的内存。capacity()，返回容器的容量。
+
+resize改变size但不改变capacity 没法释放vector的内存
+reserve改变capacity 但只保证扩大会成功
+
+此题只能改变其size大小，没法改变已经设定的容量
+
+*/
+
+}
+
+//习题9.40：如果上一题中的程序读入了256个词，在resize之后容器的capacity可能是多少？如果读入了512个、1000个或1048个词呢？
+void Test35(int val)
+{
+	vector<string> svec;
+	svec.reserve(1000);
+	string mystring = "string";
+	for (int i = 0; i < val; ++i)
+	{
+		svec.push_back(mystring);
+	}
+	svec.resize(svec.size() + svec.size() / 2);
+	cout << "输入" << val << "个词之后size" << svec.size() << endl;
+	cout << "输入" << val << "个词之后capacity" << svec.capacity() << endl;
+
+}
+
+void Test35_Fun()
+{
+	Test35(256);
+	Test35(512);
+	Test35(1000);
+	Test35(1024);
+
+}
+
+
+
+
+//9.5.1  构造string的其他方法
+/*
+								构造string的其他方法
+n、len2 和pos2 都是无符号值
+string s(cp, n)   s是cp指向的数组中前n个字符的拷贝。此数组至少应该包含n个字符
+string s(s2,pos2)   s是string s2 从下标pos2 开始的字符的拷贝。若pos2>p2.size(), 构造函数的行为未定义
+string s(s2,pos2,len2) s是stirng s2从下标pos2开始len 2个字符的拷贝。若pos2>s2.size(),构造函数的行为未定义。不管len2 的值是多少，
+									构造函数至多拷贝 s2.size()-pos2个字符
+*/
+
+void Test36()
+{
+	const char *cp = "Hello World!!!"; //空字符结束的数组
+	char noNull[] = { 'H','i' };				//不是以空字符结束
+	string s1(cp);    //拷贝cp中的字符直到遇到空字符；   s1==“Hello World!!!”
+	string s2(noNull, 2);   //从noNull拷贝两个字符； s2  == “Hi”
+	string s3(noNull);      //未定义：noNull 不是空字符结束
+	string s4(cp + 6, 5);  //从cp[6]开始拷贝5个字符； s4 == “World”
+	string s5(s1, 6, 5);   //从s1[6]开始拷贝5个字符； s5 ==“World”
+	string s6(s1, 6);       //从s1[6]开始拷贝，直至s1末尾；s6 ==“World!!!”
+	string s7(s1, 6, 20); //正确，只拷贝到S1末尾； s7 == “World!!!”
+	string s8(s1, 16);		//抛出一个out_of_range 异常
+	/*
+	通常当我们从一个const char* 创建string时，指针指向的数组必须以空字符结尾，拷贝操作遇到空字符时停止。
+	如果我们还传递给构造函数一个计数值，数组就不必以空字符结尾。如果我们未传递计数值且数组也未以空字符结尾，
+	或者给计数值大于数组大小，则构造函数的行为是未定义的。
+	
+	*/
+}
+
+//substr操作
+void Test37()
+{
+	string s("hello world");
+	string s2 = s.substr(0, 5);   //s2 = hello
+	string s3 = s.substr(6);      //s3 =world
+	string s4 = s.substr(6, 11); //s3 = world
+	string s5 = s.substr(12);		//抛出一个out_of_range 异常
+
+	/*
+	如果开始位置超过了string的大小，则substr函数抛出一个out_of_range 异常。如果开始位置加上加上计数值大于string的大小，则substr会调整计数值，只拷贝到string的末尾。
+
+	子字符串操纵
+	s.substr(pos,n)  返回一个string，包含s中从pos开始的n个字符的拷贝。pos的默认值为0.n的默认值为s.size()-pos,即拷贝从pos开始的所有字符
+	
+	*/
+
+}
+
+//练习9.41   编写程序，从一个vector<char> 初始化一个string
+void Test37_02()
+{
+	vector<char> vec1(6, 'a');
+	string _string(vec1.begin(), vec1.end());//此时不是本节所介绍的特殊方法
+	cout << _string << endl;
+
+}
+
+//练习9.42：假定你希望每次读取一个字符存入一个string中，而且知道最少需要读取100个字符，应该如何提高程序的性能？
+//解答：利用reverse()操作预留足够的内存，这样就不用在过程中进行修改内存的操作
+
+
+//9.6.2 改变string的其他方法
+void Test38()
+{
+	string s = "abc";
+	s.insert(s.size(), 5, '!');  //在s末尾插入5个感叹号
+	s.erase(s.size() - 5, 5); //从s删除最后5个字符
+
+	/*
+	除了接受迭代器的insert和erase版本外，string 还提供了接受下标的版本。下标指出了开始删除的位置，或是insert到给定值之前的位置：
+	*/
+
+	const char* cp = "stately, plump Buck";
+	s.assign(cp, 7);    //s == "Stately"
+	s.insert(s.size(), cp + 7);    //s== "Stately, plump Buck"
+
+
+	s = "some string";
+	string s2 = "some other string";
+	s.insert(0, s2);  //在s中位置0之前插入s2的拷贝
+
+	//在s[0]之前插入s2中s2[0]开始的s2.size()个字符
+	s.insert(0, s2, 0, s2.size());
+
+}
+
+//append 和 replace函数
+
+//append操作时在string末尾进行插入操作的一种简写形式
+
+void Test39()
+{
+	string s("c++ Primer"), s2 = s;   //将s和s2初始化为“c++ Primer”
+	s.insert(s.size(), "4th Ed.");  //s == "C++ Primer 4th Ed."
+	s2.append(" 4th Ed.");   //等价方法： 将“ 4th Ed.”追加到s2； s== s2
+
+	//replace 操作时调用erase和inser的一种简写形式:
+
+	//将“4th”替换为“5th”的等价方法
+	s.erase(11, 3);   //s == "C++ Primer Ed."
+	s.insert(11, "5th");  //s == "C++ Primer 5th Ed."
+	//从位置11开始，删除3个字符并插入“5th”
+	s2.replace(11, 3, "5th");   //等价方法：s == s2
+
+	//此例中调用replace时，插入的文本恰好于删除的文本一样长。这不是必须的，可以插入一个更长或更短的string:
+	s.replace(11, 3, "Fifth");   //s== "C++ Primer Fifth Ed."
+}
+/*
+												修改string的操作
+s.insert(pos,args)		 在pos之前插入args指定的字符。pos可以时一个下标或一个迭代器。接受下标的版本返回一个指向s的引用；接受迭代器的版本返回指向第一个插入字符的迭代器
+s.erase(pos,len)			删除从位置pos开始的len个字符。如果len被省略，则删除从pos开始直至s末尾的所有字符。返回一个指向s的引用
+s.assign(args)				将s中的字符替换为args指定的字符。返回一个指向s的引用
+s.append(args)				将args追加到s。返回一个指向s的引用
+s.replace(range.args)	删除s中范围range内的字符，替换为args指定的字符。range或者时一个下标和一个长度，或者时一对指向s的迭代器。返回一个指向s的引用
+
+args可以时下列形式之一；append和assign可以使用所有形式。
+str 不能与s相同，迭代器b和e不能指向s
+str      字符串str
+str，pos，len  str中从pos开始最多len个字
+cp，len    从cp指向的字符数组的前（最多）len个字符
+cp            cp指向的以空字符结尾的字符数组
+n，c         n个字符c
+b，e             迭代器b和e指定的范围内的字符
+初始化列表			花括号包围的，以逗号分隔的字符列表
+
+
+
+replace和insert所允许的args形式依赖于range和pos时如何指定的
+replace					replace						insert						insert					args可以是
+(pos,len,args)		(b,e,args)					(pos,args)					(iter,args)
+是							是								是								否							str
+是							否								是								否							str，psl，len
+是							是								是								否							cp，len
+是							是								否								否							cp
+是							是								是								是							n，c
+否							是								否								是							b2，e2
+否							是								否								是							初始化列表
+*/
+
+//练习9.43：编写一个函数，接受三个string参数s、oldVal和newVal。使用迭代器及insert和erase函数将s中所有oldVal替换为newVal。
+//测试你的程序，用它替换通用的简写形式，如，将“tho”替换为“though”，将“thru”替换为“through”
+
+void Test40(string &s, string &oldVal, string &newVal)
+{
+	int _size = oldVal.size();
+	int _size1 = newVal.size();
+	string::iterator it1 = s.begin();
+	string::iterator it2 = newVal.begin();
+	string::iterator it3 = newVal.end();
+
+	for (it1; it1 <= (s.end() - oldVal.size() + 1); ++it1)
+	{
+		//pos可以由两个迭代器相减得到,返回截取到的string  
+		if ((s.substr(it1 - s.begin(), _size) == oldVal))//substr()的作用就是截取string中的一段  
+		{
+			it1 = s.erase(it1, it1 + _size);//返回的是最后一个被删除的元素之后的位置  
+			s.insert(it1, it2, it3);//原因在于insert()函数返回了指向第一个插入字符的迭代器，而我将其直接赋值给it1，从const转为非const，类型不同，产生错误  
+			//test code
+			/*cout<<(it1-s.begin())<<endl;
+			cout<<s<<endl;*/
+			advance(it1, _size1 - 1);//向前_size1-1大小，目的是为了让it1仍然指向当前字符串的首位置，因为前面进行了++it1
+		}
+	}
+
+}
+
+void Test40_fun()
+{
+	string s = "abcdefg";
+	string oldval = "bc";
+	string newval = "asas";
+	Test40(s, oldval, newval);
+	cout << s << endl;
+}
+
+//练习9.44：重写上一题的函数，这次使用一个下标和replace
+void Test41(string &s, string &oldVal, string &newVal)
+{
+	int _size = oldVal.size();
+	int _sizeNew = newVal.size();
+	int i = 0;
+
+	for (i; i < s.size() - _size;)
+	{
+
+		if ((s.substr(i, _size) == oldVal))
+		{
+			s.replace(i, _size, newVal);
+			i += (_sizeNew - _size);
+		}
+		else
+		{
+			i++;
+		}
+	}
+
+
+}
+
+void Test41_fun()
+{
+	string s = "abcdefg";
+	string oldval = "bc";
+	string newval = "asas";
+	Test41(s, oldval, newval);
+	cout << s << endl;
+
+}
+
+//练习9.45：编写一个函数，接受一个表示名字的string参数和 两个分别表示前缀(如“Mr”或“Ms.”)和后缀(如“Jr.”或“III”)的字符串。使用迭代器及insert和append
+//函数将前缀和后缀添加到给定的名字中，将生成的新string返回。
+void Test42(string &name, string &frontVal, string &backVal)
+{
+	string::iterator it1 = name.begin();
+	name.append(backVal);
+	name.insert(it1, frontVal.begin(), frontVal.end());
+}
+
+void Test42_fun()
+{
+	string s = "Xia";
+	string frontval = "Mr.";
+	string newval = " III";
+	Test42(s, frontval, newval);
+
+}
+
+//练习9.46：重写上一题的函数，这次使用位置和长度来管理string，并只使用insert。
+
+void Test43(string &name, string &frontVal, string &backVal)
+{
+	string::iterator it1 = name.begin();
+
+	name.insert(it1, frontVal.begin(), frontVal.end());
+
+	name.insert(name.end(), backVal.begin(), backVal.end());//不要保存end迭代器
+	name.insert(name.size(), backVal);//同样作用，重载可用
+
+}
+
+void Test43_fun()
+{
+	string s = "Xia";
+	string frontval = "Mr.";
+	string newval = " III";
+	Test43(s, frontval, newval);
+}
+
+//9.5.3 string搜索操作
+//string 类提供了6个不同的搜索函数，每个函数都是4个重载版本。
+
+/*
+												string 搜索操作
+搜索操作返回指定字符出现的下标，如果未找到则返回npos。
+s.find(args)								查找s中args第一次出现的位置
+s.rfind(args)								查找s中args最后一次出现的位置
+s.find_first_of(args)					在s中查找args中任何一个字符第一次出现的位置
+s.find_last_of(args)					在s中查找args中任何一个字符最后一次出现的位置
+s.find_first_not_of(args)			在s中查找第一个不在args中的字符
+s.find_last_not_of(args)			在s中查找最后一个不在args中的字符
+
+args必须是以下形式之一
+c，pos   从s中位置pos开始查找字符c。pos默认未0
+s2，pos 从s中位置pos开始查找字符串s2.pos默认为0
+cp，pos 从s中位置pos开始查找指针cp指向的以空字符结尾的C风格字符串。pos默认为0
+cp，pos，n 从s中位置pos开始查找指针cp指向的数组的前n个字符。pos和n无默认值
+*/
+
+//9.5.4  compare函数
+//compare有6个版本
+/*
+								s.compare的几种参数形式
+s2							比较s和s2
+pos1，n1，s2		将s中从pos1开始的n1个字符与s2进行比较
+pos1，n1，s2，pos2，n2   将s中从pos1开始的n1个字符与s2中从pos2开始的n2个字符进行比较
+cp							比较s与cp指向的以空字符结尾的字符数组
+pos1，n1，cp     将s中从pos1开始的n1个字符与cp指向的以空字符结尾的字符数组进行比较
+pos1，n1，cp，n2   将s中从pos1开始的n1个字符与指针cp指向的地址开始的n2个字符进行比较
+
+*/
+
+//数值转换
+/*
+字符串中常常包含表示数值的字符。例如，我们用两个字符的string表示数值15-----字符‘1’和‘5’.一般情况，一个数的字符表示不同于其数值。
+数值15如果保存为16位的short类型，则其二进制模式位0000000000001111，而字符串“15”存为16位的short类型，则其二进制位模式位为0011000100110101.
+第一个字节表示字符‘1’，其八进制值为061，第二个字节表示‘5’，其Latin-1编码为八进制值065.
+*/
+
+void Test44()
+{
+	int i = 42;
+	string s = to_string(i);  //将整数i转换为字符表示形式
+	double d = stod(s);     //将字符串ss转换为浮点数
+
+
+	string s2 = "pi = 3.14";
+	//转换s中以数字开始的第一个子串，结果d=3.14
+	d = stod(s2.substr(s2.find_first_of("+-.0123456789")));
+
+	//find_first_of(string)  string参数中第一个非空白符必须是符号(+或者-)或数字。它可以以0x或oX开头来表示十六进制数。
+}
+//Note：如果string不能转换为一个数值，这些函数抛出一个invalid_argument异常。如果转换得到的数值无法用任何类型来表示，则抛出一个out_of_range异常
+
+/*
+												string和数值之间的转换
+to_string(val)   一组重载函数，返回数组val的stirng表示，val可以是任何算术类型。对每个浮点类型和int或更大的整数，都有相应版本的to_string。
+						与往常一样，小整数会被提升
+stoi(s,p,b)			返回s的起始子串（表示整数内容）的数组，返回值类型分别是int，long，unsigned long，long long，unsigned long long。
+stol(s,p,b)			b表示转换所用的基数，默认值为10.p是size_t 指针，用来保存s中第一个非数组字符的下标，p默认为0，即，函数不保存下标
+stoul(s,p,b)
+stoll(s,p,b)
+stoull(s,p,b)
+stof(s,p)
+
+stod(s,p)		返回s的起始子串(表示浮点数内容)的数值，返回值类型分别是float,double或long double。参数p的作用与整数转函数中一样。
+stold(s,p)
+
+
+*/
+
+//练习9.50  编写程序处理一个vector<string>,其元素都表示整形值。计算vector中所有元素之和。修改程序，使之计算表示浮点值的string之和。
+void Test45()
+{
+
+	vector<string> _string(5, "10");
+	int sum1 = 0;
+	double sum2 = 0.0;
+	for (int i = 0; i < _string.size(); ++i)
+	{
+		sum1 += stoi(_string[i]);
+		sum2 += stod(_string[i]);
+		cout << stod(_string[i]) << endl;
+	}
+	cout << "int和为：" << sum1 << endl;
+	cout << "double和为：" << sum2 << endl;
+}
+
+//练习9.51：设计一个类，它有三个unsigned成员，分别表示年，月和日。为其编写构造函数，接受一个表示日期的string参数。你的构造函数应该能处理不同数据格式，
+//如 January 1，1900，1/1/1990，Jan 1 1900 等
+class Date
+{
+public://class默认是私有继承，记得要加public
+	unsigned _year;
+	unsigned _month;
+	unsigned _day;
+	void _show()
+	{
+		cout << _year << "年" << _month << "月" << _day << "日" << endl;
+	}
+	//构造函数
+	Date(string);
+};
+
+Date::Date(string s)
+{
+	int flag = 0;
+	string number = "0123456789/";
+	string coma = ",";
+	string month;
+	unsigned pos, pos1, pos2, pos3;
+	unsigned _pos, _pos1;
+
+	/*利用一个判断，现判定怎样初始化*/
+	if ((pos = s.find_first_not_of(number)) == string::npos)
+	{
+		flag = 1;
+	}
+	if ((pos = s.find_first_of(coma)) != string::npos)
+	{
+		flag = 2;
+	}
+
+	switch (flag)
+	{
+	case 1:/*处理1/1/1991的格式*/
+		pos1 = 0;
+		pos1 = s.find_first_of("/", pos1);
+		_day = stoul(s.substr(0, pos1));//先截取目标字符串，再将字符串转化为unsigned
+		pos2 = ++pos1;
+		pos1 = s.find_first_of("/", pos1);
+		_month = stoul(s.substr(pos2, pos1));
+		pos3 = ++pos1;
+		_year = stoul(s.substr(pos3, s.size() - 1));
+		break;
+	case 2:/*处理January 1,1900的格式*/
+		_pos;
+		_pos = s.find_first_of(number);
+		month = s.substr(0, _pos);
+		//本来想用switch,表达式的结果的类型可以是 整数类型，枚举类型，或者类类型
+		//（但该类需要有单一的转换到整数类型或（可以是字符类型，但不能是浮点类型、字符串、指针类型等）
+		if (month == "January ") _month = 1;
+		if (month == "February ") _month = 2;
+		if (month == "March ") _month = 3;
+		if (month == "April ") _month = 4;
+		if (month == "May ") _month = 5;
+		if (month == "June ") _month = 6;
+		if (month == "July ") _month = 7;
+		if (month == "August ") _month = 8;
+		if (month == "September ") _month = 9;
+		if (month == "October ") _month = 10;
+		if (month == "November ") _month = 11;
+		if (month == "December ") _month = 12;
+
+		_pos1 = ++_pos;
+		_pos = s.find_first_of(number, _pos);
+		_day = stoul(s.substr(_pos1 - 1, _pos));
+
+		_year = stoul(s.substr(_pos, s.size() - 1));
+		break;
+	case 0:/*处理Jan 1 1995的格式*/
+		_pos;
+		_pos = s.find_first_of(number);
+		month = s.substr(0, _pos);
+		if (month == "Jan ") _month = 1;
+		if (month == "Feb ") _month = 2;
+		if (month == "Mar ") _month = 3;
+		if (month == "Apr ") _month = 4;
+		if (month == "May ") _month = 5;
+		if (month == "Jun ") _month = 6;
+		if (month == "Jul ") _month = 7;
+		if (month == "Aug ") _month = 8;
+		if (month == "Sep ") _month = 9;
+		if (month == "Oct ") _month = 10;
+		if (month == "Nov ") _month = 11;
+		if (month == "Dec ") _month = 12;
+
+		_pos1 = ++_pos;
+		_pos = s.find_first_of(number, _pos);
+		_day = stoul(s.substr(_pos1 - 1, _pos));
+
+		_year = stoul(s.substr(_pos, s.size() - 1));
+		break;
+	}
+}
+
+
+void Test46()
+{
+	Date _today("25/2/2017");
+	_today._show();
+
+	Date _tomorrow("January 1,1995");
+	_tomorrow._show();
+
+	Date _2tomorrow("Jan 1 1995");
+	_2tomorrow._show();
+}
+
+//9.6  容器适配器
+/*
+除了顺序容器外，标准库还定义了三个顺序容器适配器：stack，queue，和priority_queue。
+适配器使标准库中的一个通用概念，容器，迭代器和函数都有适配器。本质上，一个适配器是一种机制，能使某种事物的行为看起来像另一种事物一样。
+一个容器适配器接受一种已有的容器类型，使其行为看起来像一种不同的类型。
+例如，stack适配器接受一个顺序容器（除array或forward_list外），并使其操作起来像一个stack一样。
+
+												所有容器适配器都支持的操作和类型
+size_type					 一种类型，足以保存当前类型的最大对象的大小
+value_type				元素类型
+container_type			实现适配器的底层容器类型
+A a；						创建一个名为a的适配器
+A a(c);						创建一个名为a的适配器，带有容器c的一个拷贝
+
+关系运算符				每个适配器都支持所有关系运算符：==，!=,<,<=,>和>=这些运算符返回底层容器的比较结果
+a.empty()					若a包含任何元素，返回false，否则返回true
+a.size()						返回a中的元素数目
+swap(a,b)					交换a和b的内容，a和b必须有相同类型，包括底层容器类型也必须相同
+a.swap(b)
+*/
+
+
+//定义一个适配器  （page 329）
+/*
+每个适配器都定义两个构造函数:默认构造函数创建一个空对象，接受一个容器的构造函数拷贝该容器来初始化适配器。
+例如，假定deq是一个deque<int>,我们可以用deq来初始化一个新的stack，如下所示：
+	stack<int> stk(deq);   //从deq拷贝元素到stk
+
+	默认情况下，stack和queue是基于deque实现的，priority_queue是在vector之上实现的。我们可以在创建一个适配器时将一个命名的顺序容器作为第二个类型参数，
+	来重载默认容器类型。
+	//在vector 上实现的空栈
+	stack<string,vector<string>>  str_stk;
+	//str_stk2 在vector上实现，初始化时保存svec的拷贝
+	stack<string,vector<string>> str_stk2(svec);
+
+	对于一个给定的适配器，可以使用哪些容器时有限制的。所有适配器都要求具有添加和删除元素的能力。因此，适配器不能构造在array之上，类似的，我们也不能用
+	forward_list来构造适配器，因为使用适配器都要求容器具有添加，删除以及访问尾元素的能力。stack只要求push_back,pop_back和back操作，因此可以使用除array
+	和forward_list之外的任何容器类型来构造stack。queue适配器要求back，push_back,front 和 push_front，因此它可以构造与list或deque之上，但不能基于vector构造。
+	priority_queue除了front，push_back 和 pop_back 操作之外还要求随机访问能力，因此它可以构造与vector或deque之上，但不能基于list构造
+
+*/
+
+//栈适配器
+//stack类型定义在stack头文件中。下面的程序展示如何使用stack:
+
+void Test47()
+{
+	stack<int> intStack;//空栈
+	//填满栈
+	for (size_t ix = 0; ix != 10; ++ix)
+	{
+		intStack.push(ix);   //intStack 保存0到9十个数
+	}
+
+	while (!intStack.empty())
+	{
+		int value = intStack.top();
+
+		//使用栈顶值的代码
+		intStack.pop();		//弹出栈顶元素，继续循环
+	}
+}
+
+/*
+							表9.17未列出的栈操作
+栈默认基于deque实现， 也可以在lsit或vector之上实现。
+s.pop()					删除栈顶层元素，但不返回该元素值
+s,push(item)			创建一个新元素压入栈顶，该元素通过拷贝或移动item而来，
+S.emplace(args)  或者由args构造
+
+s.top()					返回栈顶元素，但不将元素弹出栈
+
+每个容器适配器都基于底层容器类型的操作定义了自己的特殊操作。我们只可以使用适配器操作，而不能使用底层容器类型的操作。例如，
+
+			intStack.push(ix);   //intStack保存0到9 十个数
+
+此语句试图在intStack的底层deque对象上调用push_back,虽然stack是基于deque实现的，但我们不能直接使用deque操作。不能在一个stack上调用push_back,
+而必须使用stack自己的操作--push。
+*/
+
+//队列适配器
+//queue 和priority_queue适配器定义在queue头文件中。
+/*
+														表9.17未列出的queue和priority_queue操作
+queue默认基于deque实现，priority_queue默认基于vector实现；
+queue也可以用list或者vector实现，priority_queue也可以用deque实现
+
+q.pop()					返回queue的首元素或priority_queue的最高优先级的元素，但不返回此元素
+q.front()				返回首元素或尾元素，但不删除此元素
+q.back()				只适用于queue
+q.top()					返回最高优先级元素，但不删除该元素
+
+							只适用于priority_queue
+q.push(item)		在queue末尾或priority_queue中恰当的位置创建一个元素，
+q.emplace(args)  其值为item，或由args构造
+
+*/
+
+
+/*
+stack的基本操作有：
+
+1.入栈：如s.push(x);
+
+2.出栈:如 s.pop().注意：出栈操作只是删除栈顶的元素，并不返回该元素。
+
+3.访问栈顶：如s.top();
+
+4.判断栈空：如s.empty().当栈空时返回true。
+
+5.访问栈中的元素个数，如s.size（）;
+
+*/
+/*
 int main()
 {
 
-	Test25();
+	Test35_Fun();
 	system("pause");
 	return 0;
 }
+
+*/
